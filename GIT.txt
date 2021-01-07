@@ -1,0 +1,55 @@
+Version Controlling:
+===========================
+
+	THis is the process of maintaining different versions of code. All team members upload the code into the remote version controlling
+server where the code get integrated into a single project. Next time when the team members downloads the code they will be able to access
+the code created by entire team.
+
+	Version controlling systems also preserve older and later versions of code so the team members can switch between any version based on the 
+requirment.
+	
+	Version controlling systems also keep a track of who is making what kind of changes.
+
+	There are two types of version controlling
+
+1. Centralised Version Controlling
+2. DIstributed version Controlling
+
+1. Centralised Version Controlling: In CVC we have a remote server where all the code is uploaded and version controlling happens
+only that remote server. Eg: SVN(Subversion)
+
+2. DIstributed version Controlling(DVC): In DVC we have a local repository is installed on every developer machine where intially
+the code is uploaded by the developer here version controoling happens only at the level of individual developer later the code
+will be uploaded remote server where version controlling happens at the leel of entire team.
+
+In destributed version controlling also we can create bare repositoris i.e repositories at indivudual team level or sub team level
+and then a main repository at the level of entire project.
+
+
+Installing GIT on windows:
+=========================
+1 Download git for windows from https://git-scm.com/downloads
+2 Install it
+3 Once git is installed we get an application called gitbash
+ This is the command prompt of git where we can fir git commands.
+
+Installing GIT on ubuntu linux machines:
+========================================
+1 Open terminal
+2 Update the apt repository
+sudo spt-get update
+3 Install git
+sudo apt-get install -y git
+
+Install git on Redhad, Centos linux machines.
+===========================================
+1 Open terminal
+2 Update the yum repository and install git
+yum -y install git
+
+Setting username and email globally for all users
+git config --global user.name "balla"
+git config --global user.email "venkateshballa118@gmail.com"
+
+To see the list of global configurations
+git config --global --list

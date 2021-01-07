@@ -1,0 +1,24 @@
+1. Kubernetes: Why do you need StatefulSets in Kubernetes?
+https://www.youtube.com/watch?v=Vrxr-7rjkvM&ab_channel=KodeKloud
+2. What is helm
+3. what is config maps
+4. what kind of setup we have worked on like Qube ADM or cloud prov a eks , gkd.
+5. Explain architecute of kubernetes.
+6. Version you have worked in kubernetes.
+7. In pod level we have different types of pods like single pod multi container and single pod and single container.
+8. What is difference b/w deployment and stateful sets in kubernetes.
+9. What all the objects you used in kubernetes?
+10. What is the use of service account?
+11. Once you deploy your pod into cluster how do you access your application to outside world?
+12. What is cluster iP.
+13. How will you copy your files from your local like confg file or application.prop file or something we need inside a pod, how will you copy?
+14. What is the differnece between secrets and config maps.
+15. Explain concept called static pods in kubernetes.
+16. Why daemonset required in kubernetes.
+17. What is liveness and readyness brobs in kubernetes.
+18. Scenario: We written a deployment yaml file we use cubectl apply or crate command, I don't see pod deployed in master , is it possible
+	deploy in master.
+19. If you deploy your application in normal method(normal deployment file nginix), is it possible to deploy my pod in perticulor node?
+20. You are a kubernetes admin, in case my cluster in running on 1.14 version I need to upgrade the kubernetes to 1.17.
+21. Tell me about namespaces in kubernetes.
+22. I have created a namespace like 2 cpu's 10 

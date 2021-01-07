@@ -1,0 +1,771 @@
+Add-hock Commands:
+
+Ansible performs remote config of servers in the fallowing 3 ways.
+1. Using Adhoc commands
+2. Using Playbooks
+3. Using roles.
+Ansible is created using Python and it uses inbuild Python modules for remote config of servers these modules are used in adhoc commands playbooks and roles.
+
+Important modules in Ansible.
+1 command: This is used for executing linux commands on managed nodes.
+2 shell: This is used for executing linux commands which involve redirection and piping
+3 Ping: Use to check if a remote managed node is pingable or not.
+4 User: Used in user management where we can create users, assigning home directories, default working shells etc.
+5 file: Used for creating or deleting files and directories on the managed nodes.
+6 copy: This is used for copying files and directories from controller to the managed nodes.
+7 fetch: This is used for copying files from managed nodes to the controller.
+8 apt: This is used for package management on the managed nodes(like installing, upgrading,deleting etc.) this works on ubuntu, debian etc
+flavours of linux.
+9 yum: This is also used for package management but it works on centOS, fedora, redhat linux etc machines.
+10 service: This is used for starting, stoping, restarting services on managed nodes.
+11 uri: This is used to check if the remote url is reachable or not from the managed nodes.
+12 git: Useful in performing git version controlling on the managed nodes.
+13 debug: This is used for displaying the output of the module.
+14 include: This is used for calling child palybooks from parent playbook.
+15 stat: used for capture info detail info about files and folders present on the managed nodes.
+
+Synex:
+==========
+
+ansible all/group_name/Ip addresses -i path-of-inventryfile -m modulename -a 'arguments'
+
+
+command module: ansible command to see the memory info on all managed nodes. 
+ansible all -i /etc/ansible/hosts/ -m commmand -a 'free -m'
+
+
+The default inventry file is /etc/ansible/host and it is not mandatory to give the '-i' option when working on this file.
+ansible all -m command -a 'free -m'
+
+command module is default module of ansible and it is not mandatory to use '-m' option when working on this module.
+ansible all -a 'free -m'
+
+shell module:
+
+ansible command to store output of ls-la into file1 on all the managed nodes.
+ansible command for downloading and installing docker on all the managed nodes 
+
+ansible all -m shell -a 'curl -fsSL https:get.docker.com -o get-docker.sh'
+ansible all -m shell -a 'sh get-docker.sh'
+
+user module:
+
+ansible command to create user and assign a password on all the managed nodes.
+
+ansible all - user -a 'name=sai password=something' -b
+
+user module can also be used for assgning userid, home directory, default working shell etc.
+
+ansible all -m user -a 'name=anu password=something home=/home/ubuntu/anu uid=1234 comment='A normal user" shell=/bin/bash' -b
+
+file module:
+
+This is used for creating and deleting the files on managed nodes. 
+ansible command to create files on all managed nodes.
+ansible all -m file -a 'name=/tmp/file1 state=touch'
+
+Note: state=touch is for creating files
+state=directory is for creating directories
+state=absent is for deleting files or directories
+
+ansible command to create a file on all the managed nodes and also control ownership, groupownership permissions etc..
+
+ansible all -m file -a 'name=/tmp/file2 state=touch owner=sai group=anu mode=770'
+
+copy module:
+
+This is used for copying files and directories from the managed nodes.
+
+ansible command to copy etc/passwd file from the controller to all managed nodes.
+ansible all -m copy -a 'src=/etc/passwd dest=/tmp'
+
+copy module can also be used for changing the ownership, group ownership and permissions of the files that are copied into the 
+managed nodes.
+
+ansible all -m copy -a 'src=/etc/passwd dest=/tmp owner=root group=anu mode=765' -b
+
+copy module can also directly send content into a file.
+ansible all -m copy -a 'content="Hello intelliq\n" dest=/tmp/passwd' -b
+
+Ansible command to copy /etc/passwd file from the managed nodes to the controller.
+ansible all -i myinventory -m fetch -a 'src=/etc/passwd/ dest=/tmp'
+
+apt module:
+
+This is used for installing, uninstalling softwares on the managed nodes.
+
+ansible all -i myinventory -m apt -a 'name=tomcat8 state=present' -b
+Note: state=present is for installation, 
+state=absent is for uninstallation, 
+state=latest is for upgrading to the latest version
+
+To update the apt repository before installing softwares we can use the option update_cache=yes
+ansible command to install the java after updating apt repository.
+ansible all -i myinventory -m apt -a 'name=openjdk-8-jdk state=present update_cache=yes' -b
+
+create tomcat-user.xml file from the controller and copy to all managed nodes.
+
+1 install tomcat8 ansible all -m apt -a 'name=tomcat8 state=present update_cache=yes' -b
+2 install tomcat8-admin ansible all -m apt - a 'name=tomcat8-admin state=present' -b
+3 create tomcat-users.xml file
+vim tomcat-users.xml 
+<tomcat-users>
+	<user username="intelliqit" password="myintelliquit" roles="manager-script"/>
+</tomcat-users>
+4 Copy this tomcat-users to the managed nodes
+ansible all -m copy -a 'src=tomcat-users.xml dest=/etc/tomcat8' -b
+
+ansible command to restart8 on all managed nodes.
+1 Restart tomcat8
+ansible all -m service -a 'name=tomcat8 state=restarted' -b
+Note: state=restarted is for restarting the service
+state= started is for starting the service
+state= stopped is for stopping the service
+
+GIT Module:
+
+This is used for performing git version controlling on the managed nodes.
+
+Ansible command to clone remote repository into all the managed nodes
+ansible all -i myinventory -m git -a 'repo=https://github.com/intelliqittrainings/maven.git dest=/tmp.folder'
+
+Replace module:
+
+Change the port number of tomcat from 8080 to 9090 and restart tomcat8
+1 Change port of tomcat8
+ansible all -m replace -a 'regexp=8080 replac=9090 path=/etc/tomcat8/server.xml' -b
+2 restart tomcat8
+ansible all -m service -a 'name=tomcat8 state=restarted' -b
+3 To check if tomcat8 is running on 9090 port
+launch any browser
+public_ip_any_managed_node:9090
+
+URI module:
+This is used to check if a remote url is reachable or not, if it is reachable it will return the status as 200 else it's return the status 
+as -1
+
+Ansible command to check google is reachable from all the managed nodes.
+ansible all -m uri -a 'url=https://google.com status=200'
+
+
+
+Configuring Tomcat8:
+
+Install tomcat8 on all the managed nodes change the port of tomcat 8080 to 9090, restart tomcat and check wheather tomcat is responding on 9090 port.
+
+1 Install tomcat8
+ansible all -m apt -a 'name=tomcat8 state=present' -b
+2 Change port of tomcat from 8080 to 9090
+ansible all -m replace -a 'regexp=8080 replace=9090 path=/etc/tomcat8/server.xml' -b
+3 Restart tomcat8
+ansible all -m service -a 'name =tomcat8 state=restarted' -b
+4 Check url response of uri -a 'url=http://172.31.88.210:9090 status=200'
+5 Check url response of 2nd managed node
+ansible all -m uri -a 'url=http://172.31.89.71:9090 status=200'
+
+
+Sample Yaml code:
+
+---
+intelliq:
+ trainers:
+  devops: sai
+  aws: shashi
+ coordinators:
+  devops: lakshi
+  aws: shailaja
+...
+
+Ansible Play Books:
+
+Addhoc commands can be used to work on a single module and sigle set of arguments when we want to perform complex configaration
+management acitivies addhock commands are difficult to manage so we can use playbooks. Play books are created using yaml syntex
+and they are designed to work on the single host or group of hosts or all the hosts. Playbook is a combination of place, the main 
+advantage of using playbooks over addhoc commands is reusability.
+
+Ansible for creating a file on all the managed nodes:
+
+- name: Creating files on all nodes
+  hosts: All
+  tasks:
+   - name: Creating a file
+     file: 
+      name: /home/ubuntu/file1
+      state: touch
+
+To check weather this play book is syntatically currect or not.
+ansible-playbook playbook1.yml --syntex-check
+
+To exec the playbook
+ansible-playbook playbook1.yml
+
+Ansible playbook for installing GIT on all the managed nodes.
+
+- name: Install git and clone a remote git repo
+  hosts: all
+  tasks: 
+   - name: Install git
+     apt:
+      name: git
+      state: present
+   - name: Clone a remote repo
+     git:
+      repo: https://github.com/intelliqittrainings/maven.git
+      dest: /home/ubuntu/mygit
+
+Ansible playbook for configuring tomcat8
+
+---
+- name: Configuring tomcat8
+  hosts: all
+  tasks:
+   -name: Install tomcat8
+    apt:
+     name: tomcat8
+     state: present
+   -name: Change port from 9090 to 8080
+     replace:
+      regexp: 9090
+      replace: 8080
+      path: /etc/tomcat8/server.xml
+   -name: Restart tomcat8
+     service:
+      name: tomcat8
+      state: restrated
+   -name: check url response of server1
+     uri:
+      url:http://172.32.89.71:8080
+      status:200
+   -name: Check url response of server2
+     uri:
+      url: http://172.31.88.210:8080
+      status: 200
+
+
+Ansible playbook for configaring apache2
+install apache2 edit index.html file restart apache2 and check the url response.
+
+---
+- name: Congigaring apche2
+  hosts: all
+  tasks: 
+   - name: Install apache2
+     apt: 
+      name: apache2
+      state: present
+    -name: Edit the index.html file
+     copy:
+      content: "intelliq home page\n"
+      dest: /var/www/html/index.html
+    -name: Restart apache2
+     service:
+      name: apache2
+      state: restarted
+    -name: check url response of 1st managed node
+     uri: 
+      url: http://172.31.88.210
+      status: 200
+    -name: check url response of 2nd server
+     uri:
+      url: http://172.31.89.71
+      status:200
+...
+
+
+Variables in Ansible:
+
+Ansible supports 3 types of variables
+1 Global scope variables
+2 Host scope variables
+3 Play scope variables
+
+1 Global scope variabls: These variabls are passed from the command prompt using '--extra-vars' option, they have the highest level of priority
+
+---
+- name: Install/Uninstall s/w applications
+  host: all
+  task: 
+   - name: Install/Uninstall
+     apt:
+      name: "{{a}}"
+      state: "{{b}}"
+      update_cache: "{{c}}" 
+...
+
+To pass variabls to this playbook for uninstalling apache2
+ansible-playbook playbook5.yml --extra-vars "a=apache2 b=absent c=no" -b
+
+We can use the same playbook for installing git
+ansible-plabybook playbook5.yml --extra-vars "a=git b=present c=no" -b
+
+Ansible palybook for creating users and creating files or direcorires in the users home directories.
+
+- name: Creating users and creating files/dirs in users home dir
+  hosts: all
+  tasks:
+   - name: Create users
+     user:
+      name: "{{a}}"
+      password: "{{b}}"
+      home: "{{c}}"
+   - name: Create files/dir
+     file:
+      name: "{{d}}"
+      state: "{{e}}"
+
+...
+
+We can use this ansible playbook and create multiple users and files are directries in their home directry.
+
+ansible-playbook playbook6.yml --extra-vars "a=Rani b=intelliq c=/home/ubuntu/Rani d=/home/ubuntu/Rani/dir1 e=directory" -b
+ansible-plabybook playbook6.yml --extra-vars "a=Raju b=Intelliq c=/home/Raju d=/home/Raju/file1 e=touch" -b
+
+2 Play scope variabls: These variables are defined withing the plabybook and they can effect only a single play and they have the last level
+of priority.
+
+- name: Install tomcat8
+  hosts: All
+  vars:
+   - a: tomcat8
+   - b: present
+   - c: no
+  tasks: 
+   - name: Install tomcat
+     apt:
+      name:"{{a}}"
+      state:"{{b}}"
+      update_cache: "{{c}}"
+...
+
+The above playbook works like a templete whose default behaviour is to install tomcat8 but we can bipass that and make it work on 
+any other sets of data by passing global space variabls using --extra-vars
+
+Grouping in Inventry file:
+	Group name can be provided by giving the names in square braces.
+vim /etc/ansible/hosts
+
+[webserver]
+172.31.89.71
+172.31.88.210
+[appserver]
+172.31.80.101
+172.31.89.71
+[server:children]
+webserver
+appserver
+
+Host scope variables:
+	These variables are classified into two types 1. Variabls to work on group of hosts 2. Variabls to work on single host
+1. Variabls to work on group of hosts: These variables should be created in a folder called 'group_vars', this folder should be created
+in the same location where all the play books are present, in this folder create a file whose name is same as group name from the inventry file
+and create the variables.
+	1 Change directory to the folder where the playbooks are present 
+	cd path_of_playbooks_folder
+	2 Create a directory group_vars and move into it
+	mkdir group_vars
+	cd group_vars
+	3 Create a file (name of the file should same as group name from inventry)
+	vim wevserver
+	---
+	a: Usha
+	b: intelliq
+	c: /home/Usha
+	d: 2468
+	...
+	4 Go back to the folder where the playbooks are present
+	cd ..
+	5 Create a playbook to use the variabls
+	vim playbook8.yml
+	---
+	- name: user creation using host scope variabls
+	  hosts: webserver
+	  tasks:
+	   - name: Create a user
+	     user:
+	     name: "{{a}}"
+	     password: "{{b}}"
+	     home: "{{c}}"
+	     uid: "{{d}}"
+	...
+
+	6 To run the plabybook
+	 ansible-playbook playbook8.yml -b
+
+2. Variabls to work on single host: These variables shoud be created in a folder called host_vars and this folder should be created in the
+same folder where the playbooks are present. in this host_vars folder we should create a file whose name is same as ip address of one macine
+from the inventry file and in this file we should create the variables these variables will work only on that mahchine.
+ 
+	1 Change the directory to the folder where the playbooks are present
+	cd path_of_playbooks_folder
+	2 Create a directory host_vars and move into it
+	mkdir host_vars
+	cd host_vars
+	3 Create a file (name of the file should same as one host ip address from inventry)
+	vim 172.31.80.101
+	---
+	a: tree
+	b: present
+	c: yes
+	...
+	4. Go back to the folder where the playbooks are present
+	cd ..
+	5 Create a playbook to use the variables 
+	vim playbook9.yml
+	---
+	- name: installing tree using host variables
+	hosts: 172.31.80.101
+	tasks:
+	 -name: install tree
+	  apt:
+	   name: "{{a}}"
+	   state: "{{b}}"
+	   update_cache: "{{c}}"
+	...
+	6 To run the playbook
+	ansible-playbook playbook9.yml -b
+
+
+Looping in Ansible: We can make specific modules run multiple times using loops, loops can be implimented using 'with_item' and
+'with_sequence'
+
+Ansible playbook for installing multiple software packges using 'with_items'
+
+---
+- name: Install s/w application
+  hosts: all
+  tasks:
+   - name: Install s/w
+     apt:
+      name: "{{item}}"
+      state: present
+      update_cache:no
+     with_item:
+      - tree
+      - openjdk-8-jdk
+      - git
+      - firewalld 
+
+
+Ansible playbook for installing/uninstalling various software packages with or without updating the apt repogitories.
+
+---
+- name: Install/Uninstall/Upgrade s/w application
+  hosts: all
+  tasks: 
+   -name: Install or Uninstall or upgrade s/w
+    apt:
+     name: "{{item.a}}"
+     state: "{{item.b}}"
+     update_cache: "{{item.c}}"
+    with_items:
+     - {a: tree,b: present, c: no}
+     - {a: openjdk-8-jdk,b: absent,c: no}
+     - {a: git,b: latest, c: no}
+     - {a: firewalld,b: absent,c: yes}
+
+
+
+Error Handling or Exception Handling:
+--------------------------------------
+
+Whenever a specific module in ansible fails, the program execution stops over there if we want to continue the playbook ever after encounter
+the error we can use error handling.
+The module might generate the error should be given in the block section, if it fails the control comes into the rescue section. Always 
+section is executed in every time irrespective of wheather the code passes or fails.
+
+---
+- name: Error Handling
+  hosts: all
+  tasks:
+   - block:
+     - name: Install tomcat7
+       apt:
+       name: tomcat7
+       state: present
+     rescue:
+      - name: Install tomcat8
+        apt:
+         name: tomcat8
+         state: present
+     always:
+      - name: Restart
+        service:
+         name: tomcat8
+         state: restarted
+
+ 
+Ansible playbook for implimenting all CI/CD:
+
+---
+- name: Install s/w required for CI
+  host: servers
+  tasks:
+   - name: Install s/w's
+     apt:
+      name: "{{item}}"
+      state: present
+     with_items:
+      - openjdk-8-jdk
+      - git
+      - maven
+      - tomcat8
+      - tomcat8-admin
+- name: download the dev code and create an artifiact
+  hosts: devserver
+  tasks: 
+   - name: Continuous Download
+     git:
+      repo: https://github.com/intelliquittrainins/maven.git
+      dest: /home/ubuntu/project-code
+   - name: Continuous Build
+     shell: cd /home/ubuntu/project-code;mvn package
+   - name: copy artifact from dev to controller
+     fetch:
+      src: /home/ubuntu/project-code/webapp/target/webapp.war
+      dest: /temp
+- name: Deploy the code into QAserver and run the test programs
+  hosts: qaserver
+  tasks: 
+   - name: copy artifacts into tomcat on qaserver
+     copy:
+      src: /tmp/172.31.80.101/home/ubuntu/project-code/webapp/target/webapp.war
+      dest: /var/lib/tomcat8/webapps/testwebapp.war
+   - name: download the selenium programs
+     git:
+      repo: https://github.com/selenium-saikrishna/functionalTesting.git
+      dest: /home/ubuntu/test-code
+   - name: Deploy the artifacts into prod servers
+     hosts: prodserver
+     tasks:
+      - name: Continuous Delivery
+        copy:
+ 	 src: /tmp/172.31.80.101/home/ubuntu/project-code/webapp/target/webapp.war
+	 dest: /var/lib/tomcat8/webapps/prodwebapp.war
+
+
+
+
+
+Conditional Statememts in Ansible:
+----------------------------------
+
+If you want to exec the statement only when the specific condition is true, then we can use when 
+statements.
+
+---
+- name: Implementing conditional statements(when)
+  hosts: all
+  vars: 
+   - a: 10
+  tasks:
+   - name: Install tree
+     apt:
+      name: tree
+      state: present
+       when: a==100
+
+
+
+
+---------------------------------------------
+
+---
+- name: Create a user and display the output
+  hosts: all
+  tasks:
+   - name: Create user
+     user: 
+      name: Rajesh
+      password: intelliq
+      home: /home/ubuntu/Rajesh
+      uid: 8999
+     register: a
+   - name: display output of above module
+     debug:
+      var: a
+
+
+Ansible playbook to check if a folder is present and if not present then create a file.
+
+---
+- name: Check if a directory is present if not create a file
+  hosts: all
+  tasks:
+   - name: check for dir f1
+     stat: 
+      path: /home/ubuntu/f1
+     register: a
+   - name: Display output of stat module
+     debug: 
+      var: a
+   - name: Create file
+     file:
+     name: /home/ubuntu/f1
+     stat: touch
+    when: a.stat.exists == false
+
+
+Tagging in Ansible:
+	Tags are used for providing more moduler control over the flow of execution of the playbook. This is done by the 
+assigining aliases to the modules.
+
+---
+- name: Tagging in ansible
+  hosts: all
+  tasks: 
+   - name: Install tree
+     apt:
+      name: tree
+      state: present
+     tags: tree_installation
+   - name: user creation
+     user:
+     name: Hari
+     password: intelliq
+     tags: user_creation
+   - name: Copy files
+     copy:
+      src: /etc/passwd
+      dest: /tmp
+...
+
+
+To exec all tagged modules from the above playbook
+ansible-playbook -i myinventory playbook20.yml --tags=tagged -b
+
+To exec all the untagged modules from the above playbook
+ansible-playbook -i myinventory playbook20.yml --tags=untagged -b
+
+To exec modules with the specific tag name
+ansible-playbook -i myinventory playbook20.yml --tags=user_creation -b
+
+Include module: This module is used for calling child playbooks from a parent playbook 
+
+Create child playbooks for configuring apache2 and call them from a parent playbook
+
+---
+- name: Install apache2
+  apt:
+   name: apache2
+   state: present
+----------------------------
+Second child playbook
+
+---
+- name: edit index.html file
+  copy:
+   content: "intelliq...\n"
+   dest: /var/www/html/index.html
+-----------------------------
+Third child playbook
+
+--- 
+- name: Restart apache2
+  service:
+   name: apache2
+   state: restarted
+---------------------------
+Fourth child playbook
+
+---
+- name: Check url responce of all managed nodes
+  uri:
+   url: "{{item}}"
+   status: 200
+  with_items:
+   - https: //54.91.230.252
+   - https: //172.31.89.71
+   - https: //172.31.80.101
+...
+----------------------------
+Parent playbook
+
+---
+- name: Confiruging apache2 using child playbooks
+  hosts: all
+  tasks:
+  - name: Call child playbooks
+    include: "{{item}}"
+    with_items:
+     - install_apache2.yml
+     - edit_index_html.yml
+     - restart_apache2.yml
+     - check_url_response.yml
+
+
+
+Child playbook:
+---
+- name: Create a directory
+  file:
+   name: /home/ubuntu/newdir1
+   state: directory
+
+Parent playbook:
+---
+- name: Create directory using child playbooks
+  hosts: all
+  tasks:
+   - name: Call child playbook
+     include: playbook21.yml
+
+
+
+Ansible Vault:
+
+	This is the feature of the ansible which is used for creating playbooks in a secured format there playbooks can be accessed 
+only a password.
+
+1 To create a vault playbook
+ ansible-vault create playbook_nae.yml
+
+2 To see the content of the vault playbook
+ ansible-vault view playbook_name.yml
+
+3 To edit the content of the a vault playbook
+ ansible-vault edit playbook_name.yml
+
+4 To convert an ordinary playbook into a valut playbook
+ ansible-vault encrypt playbook_name.yml
+
+5 To convert a vault playbook into a normal playbook
+ ansible-vault decrypt playbook_name.yml
+
+
+
+ROLES:
+======
+
+A role is a predefined folder structure which is used for configaring a software application. Role contains everything that is 
+necessary for configaring the software application, since the folder structure is predefined it is easy to everyone to understand
+in which folder what components are present. Roles support greater reusability and maintainability. 
+
+Ansible roles are present in a site called Ansible Galaxy. This is the cloud site of ansible we can download roles from this site and
+customise them based on our requirements.
+
+To create a role
+ ansible-galaxy init role_name --offline
+
+Folder Structure on Roles:
+
+README.MD: this is the simple text file which contains info about the role in plain English.
+
+defaults: This folder is used for storing information about the application that is being configured, it also contains variables of lesser
+priority.
+
+files: All the static configuration files that are neccessary for configuring the software application are stored in this folder.
+
+handlers: Handlers are modules which are executed only if someother module is exeucted successfully and it has made some changes.
+ all such handlers should be placed in this folder.
+
+meta: Data about the data is called metadata, this folder is used for storing info like the auther of the role, date and time when it was
+created the versions it supports etc.
+
+tasks: The actual configuration that should be performed on the remote server is stored in this folder.
+
+templetes: This is used for storing dynamic configaration files which are used by the application.
+
+tests: Ansible modules which are related to checking configuration activities on the remote servers are stored in this folder.
+
+vars: This is used for storing variables and these variables are higher priority than the variables present in the vars folder.
+

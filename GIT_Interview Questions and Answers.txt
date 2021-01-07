@@ -1,0 +1,343 @@
+1. What is git? 
+2. What is difference between git and GitHub and GitLab (for CI tool also we can use)?
+3. Any other version control tools other than git? 
+4. What is difference between svn and git?
+5. What is merge conflicts have you faced ever in you experience? if you face how you resolve?
+https://www.youtube.com/watch?v=nDRWhKc5Yd4
+6. What is git stash?
+7. What is git HEAD?
+8. What is staging area in git?
+9. What is difference between git fetch and pull and clone?
+10. What is difference between git merge and rebase?
+11. What is .gitignore file? What is the purpose of the file?
+12. What is git branch? Have you worked on branches?
+13. How to merge branches?
+14. What is cherry-pick in git?
+15. How to create a git project?
+16. How to check difference in between two files?
+17. How edit the committed message?
+18. How to check the last few commits?
+19. How to delete remote branch and local branch?
+20. How to create local branch?
+21. What is tag? How many types in tag? How we will create tags?
+22. How to roll back committed code.
+23. How to clone specific branch in GIT
+Ans) In order to clone a specific branch, you have to execute “git branch” with the “-b” and specify the branch you want to clone.
+ $ git clone -b dev https://github.com/username/project.git Cloning into 'project'
+Q1: What is Git fork? What is difference between fork, branch and clone?
+A fork is a remote, server-side copy of a repository, distinct from the original. A fork isn't a Git concept really, it's more a political/social idea.
+A clone is not a fork; a clone is a local copy of some remote repository. When you clone, you are actually copying the entire source repository, 
+including all the history and branches.
+A branch is a mechanism to handle the changes within a single repository in order to eventually merge them with the rest of code. A branch is something that is within a repository. 
+Conceptually, it represents a thread of development.
+Q2: What's the difference between a "pull request" and a "branch"?
+A branch is just a separate version of the code.
+
+Q2: What's the difference between a "pull request" and a "branch"?
+
+A pull request is when someone take the repository, makes their own branch, does some changes, then tries to merge that branch in (put their changes in the other person's code repository).
+
+Q3: What is the difference between "git pull" and "git fetch"?
+In the simplest terms, git pull does a git fetch followed by a git merge.
+
+When you use pull, Git tries to automatically do your work for you. It is context sensitive, so Git will merge any pulled commits into the branch you are currently working in.
+pull automatically merges the commits without letting you review them first. If you don’t closely manage your branches, you may run into frequent conflicts.
+
+When you fetch, Git gathers any commits from the target branch that do not exist in your current branch and stores them in your local repository. However, it does not merge them with your
+current branch. This is particularly useful if you need to keep your repository up to date, but are working on something that might break if you update your files. 
+To integrate the commits into your master branch, you use merge.
+Q4: How to revert previous commit in git?
+Say you have this, where C is your HEAD and (F) is the state of your files.
+(F)
+A-B-C
+    ↑
+  master
+To nuke changes in the commit:
+git reset --hard HEAD~1
+https://www.youtube.com/watch?v=VUuGa1QFmcA
+
+Q5: What is "git cherry-pick"?
+
+The command git cherry-pick is typically used to introduce particular commits from one branch within a repository onto a different branch. A common use is to forward- or back-port commits from a maintenance branch to a development branch.
+
+This is in contrast with other ways such as merge and rebase which normally apply many commits onto another branch.
+
+Consider:
+
+git cherry-pick <commit-hash>
+
+Q6: Explain the advantages of Forking Workflow
+The Forking Workflow is fundamentally different than other popular Git workflows. Instead of using a single server-side repository to act as the “central” codebase, it gives every developer their own server-side repository. The Forking Workflow is most often seen in public open source projects.
+
+The main advantage of the Forking Workflow is that contributions can be integrated without the need for everybody to push to a single central repository that leads to a clean project history. Developers push to their own server-side repositories, and only the project maintainer can push to the official repository.
+
+When developers are ready to publish a local commit, they push the commit to their own public repository—not the official one. Then, they file a pull request with the main repository, which lets the project maintainer know that an update is ready to be integrated.
+
+Q7: Tell me the difference between HEAD, working tree and index, in Git?
+The working tree/working directory/workspace is the directory tree of (source) files that you see and edit.
+The index/staging area is a single, large, binary file in <baseOfRepo>/.git/index, which lists all files in the current branch, their sha1 checksums, time stamps and the file name - it is not another directory with a copy of files in it.
+HEAD is a reference to the last commit in the currently checked-out branch.
+
+Q8: Could you explain the Gitflow workflow?
+
+Gitflow workflow employs two parallel long-running branches to record the history of the project, master and develop:
+
+Master - is always ready to be released on LIVE, with everything fully tested and approved (production-ready).
+
+Hotfix - Maintenance or “hotfix” branches are used to quickly patch production releases. Hotfix branches are a lot like release branches and feature branches except they're based on master instead of develop.
+
+Develop - is the branch to which all feature branches are merged and where all tests are performed. Only when everything’s been thoroughly checked and fixed it can be merged to the master.
+
+Feature - Each new feature should reside in its own branch, which can be pushed to the develop branch as their parent one.
+
+Q9: When should I use "git stash"?
+
+The git stash command takes your uncommitted changes (both staged and unstaged), saves them away for later use, and then reverts them from your working copy.
+
+Consider:
+
+$ git status
+On branch master
+Changes to be committed:
+new file: style.css
+Changes not staged for commit:
+modified: index.html
+$ git stash
+Saved working directory and index state WIP on master: 5002d47 our new homepage
+HEAD is now at 5002d47 our new homepage
+$ git status
+On branch master
+nothing to commit, working tree clean
+
+The one place we could use stashing is if we discover we forgot something in our last commit and have already started working on the next one in the same branch:
+
+# Assume the latest commit was already done
+# start working on the next patch, and discovered I was missing something
+
+# stash away the current mess I made
+$ git stash save
+
+# some changes in the working dir
+
+# and now add them to the last commit:
+$ git add -u
+$ git commit --ammend
+
+# back to work!
+$ git stash pop
+
+Q10: How to remove a file from git without removing it from your file system?
+
+If you are not careful during a git add, you may end up adding files that you didn’t want to commit. However, git rm will remove it from both your staging area (index), as well as your file system (working tree), which may not be what you want.
+
+Instead use git reset:
+
+git reset filename          # or
+echo filename >> .gitingore # add it to .gitignore to avoid re-adding it
+
+Q11: When do you use "git rebase" instead of "git merge"?
+Both of these commands are designed to integrate changes from one branch into another branch - they just do it in very different ways.
+
+Consider before merge/rebase:
+A <- B <- C    [master]
+^
+ \
+  D <- E       [branch]
+
+after git merge master:
+
+A <- B <- C
+^         ^
+ \         \
+  D <- E <- F
+
+after git rebase master:
+
+A <- B <- C <- D <- E
+
+With rebase you say to use another branch as the new base for your work.
+
+When to use:
+
+If you have any doubt, use merge.
+The choice for rebase or merge based on what you want your history to look like.
+More factors to consider:
+
+Is the branch you are getting changes from shared with other developers outside your team (e.g. open source, public)? If so, don't rebase. Rebase destroys the branch and those developers will have broken/inconsistent repositories unless they use git pull --rebase.
+
+How skilled is your development team? Rebase is a destructive operation. That means, if you do not apply it correctly, you could lose committed work and/or break the consistency of other developer's repositories.
+
+Does the branch itself represent useful information? Some teams use the branch-per-feature model where each branch represents a feature (or bugfix, or sub-feature, etc.) In this model the branch helps identify sets of related commits. In case of branch-per-developer model the branch itself doesn't convey any additional information (the commit already has the author). There would be no harm in rebasing.
+
+Might you want to revert the merge for any reason? Reverting (as in undoing) a rebase is considerably difficult and/or impossible (if the rebase had conflicts) compared to reverting a merge. If you think there is a chance you will want to revert then use merge.
+
+Q)How do you revert a commit that has already been pushed and made public?
+One or more commits can be reverted through the use of git revert. This command, in essence, creates a new commit with patches that cancel out the changes introduced in specific commits. In case the commit that needs to be reverted has already been published or changing the repository history is not an option, git revert can be used to revert commits. Running the following command will revert the last two commits:
+
+git revert HEAD~2..HEAD
+Alternatively, one can always checkout the state of a particular commit from the past, and commit it anew.
+
+Q)How do you squash last N commits into a single commit?
+Squashing multiple commits into a single commit will overwrite history, and should be done with caution. However, this is useful when working in feature branches. To squash the last N commits of the current branch, run the following command (with {N} replaced with the number of commits that you want to squash):
+
+git rebase -i HEAD~{N}
+Upon running this command, an editor will open with a list of these N commit messages, one per line. Each of these lines will begin with the word “pick”. Replacing “pick” with “squash” 
+or “s” will tell Git to combine the commit with the commit before it. To combine all N commits into one, set every commit in the list to be squash except the first one. Upon exiting the 
+editor, and if no conflict arises, git rebase will allow you to create a new commit message for the new combined commit.
+Q)How do you find a list of files that has changed in a particular commit?
+
+git diff-tree -r {hash}
+Given the commit hash, this will list all the files that were changed or added in that commit. The -r flag makes the command list individual files, rather than collapsing them into root directory names only.
+
+The output will also include some extra information, which can be easily suppressed by including a couple of flags:
+
+git diff-tree --no-commit-id --name-only -r {hash}
+Here --no-commit-id will supress the commit hashes from appearing in the output, and --name-only will only print the file names, instead of their paths.
+
+Q)How do you setup a script to run every time a repository receives new commits through push?
+To configure a script to run every time a repository receives new commits through push, one needs to define either a pre-receive, update, or a post-receive hook depending on when exactly the script needs to be triggered.
+
+Pre-receive hook in the destination repository is invoked when commits are pushed to it. Any script bound to this hook will be executed before any references are updated. This is a useful hook to run scripts that help enforce development policies.
+
+Update hook works in a similar manner to pre-receive hook, and is also triggered before any updates are actually made. However, the update hook is called once for every commit that has been pushed to the destination repository.
+
+Finally, post-receive hook in the repository is invoked after the updates have been accepted into the destination repository. This is an ideal place to configure simple deployment scripts, invoke some continuous integration systems, dispatch notification emails to repository maintainers, etc.
+
+Hooks are local to every Git repository and are not versioned. Scripts can either be created within the hooks directory inside the “.git” directory, or they can be created elsewhere and links to those scripts can be placed within the directory.
+
+
+Q)What is git bisect? How can you use it to determine the source of a (regression) bug?
+
+Git provides a rather efficient mechanism to find bad commits. Instead of making the user try out every single commit to find out the first one that introduced some particular issue into the code, git bisect allows the user to perform a sort of binary search on the entire history of a repository.
+
+By issuing the command git bisect start, the repository enters bisect mode. After this, all you have to do is identify a bad and a good commit:
+
+git bisect bad # marks the current version as bad
+git bisect good {hash or tag} # marks the given hash or tag as good, ideally of some earlier commit
+Once this is done, Git will then have a range of commits that it needs to explore. At every step, it will checkout a certain commit from this range, and require you to identify it as good or bad. After which the range will be effectively halved, and the whole search will require a lot less number of steps than the actual number of commits involved in the range. Once the first bad commit has been found, or the bisect mode needs to be ended, the following command can be used to exit the mode and reset the bisection state:
+
+git bisect reset
+
+Q)What are the different ways you can refer to a commit?
+n Git each commit is given a unique hash. These hashes can be used to identify the corresponding commits in various scenarios (such as while trying to checkout a particular state of the code using the git checkout {hash} command).
+
+Additionally, Git also maintains a number of aliases to certain commits, known as refs. Also, every tag that you create in the repository effectively becomes a ref (and that is exactly why you can use tags instead of commit hashes in various git commands). Git also maintains a number of special aliases that change based on the state of the repository, such as HEAD, FETCH_HEAD, MERGE_HEAD, etc.
+
+Git also allows commits to be referred as relative to one another. For example, HEAD~1 refers to the commit parent to HEAD, HEAD~2 refers to the grandparent of HEAD, and so on. In case of merge commits, where the commit has two parents, ^ can be used to select one of the two parents, e.g. HEAD^2 can be used to follow the second parent.
+
+And finally, refspecs. These are used to map local and remote branches together. However, these can be used to refer to commits that reside on remote branches allowing one to control and manipulate them from a local Git environment.
+
+Q)What is git rebase and how can it be used to resolve conflicts in a feature branch before merge?
+
+In simple words, git rebase allows one to move the first commit of a branch to a new starting location. For example, if a feature branch was created from master, and since then the master branch has received new commits, git rebase can be used to move the feature branch to the tip of master. The command effectively will replay the changes made in the feature branch at the tip of master, 
+allowing conflicts to be resolved in the process. When done with care, this will allow the feature branch to be merged into master with relative ease and sometimes as a simple fast-forward operation.
+Q)How do you configure a Git repository to run code sanity checking tools right before making commits, and preventing them if the test fails?
+This can be done with a simple script bound to the pre-commit hook of the repository. The pre-commit hook is triggered right before a commit is made, even before you are required to enter a commit message. In this script one can run other tools, such as linters and perform sanity checks on the changes being committed into the repository. For example, the following script:
+
+#!/bin/sh
+files=$(git diff --cached --name-only --diff-filter=ACM | grep '.go$')
+if [ -z files ]; then
+    exit 0
+fi
+unfmtd=$(gofmt -l $files)
+if [ -z unfmtd ]; then
+    exit 0
+fi
+echo “Some .go files are not fmt’d”
+exit 1
+… checks to see if any .go file that is about to be commited needs to be passed through the standard Go source code formatting tool gofmt. By exiting with a non-zero status, the script effectively prevents the commit from being applied to the repository.
+
+Q)One of your teammates accidentally deleted a branch, and has already pushed the changes to the central git repo. There are no other git repos, and none of your other teammates had a local copy. How would you recover this branch?
+Ans)Check out the latest commit to this branch in the reflog, and then check it out as a new branch.
+
+
+
+Q)How can you copy a commit made in one branch to another (e.g. a hot fix commit from released branch to current development branch)?
+You need to use the cherry-pick command. It provides the possibility to play back an existing commit to your current location/branch. So you need to switch to the target branch (e.g. git checkout development) and call git cherry-pick {hash of that commit}.
+
+In spite of applying the same changes, it will be a new commit with a new hash because the changes are applied to a different destination.
+Q)How do you cherry-pick a merge commit?
+Cherry-pick uses a diff to find the difference between branches.
+
+As a merge commit belongs to a different branch, it has two parents and two changesets.
+
+For example, if you have merge commt ref 63ad84c, you have to specify -m and use parent 1 as a base:
+
+git checkout release_branch
+git cherry-pick -m 1 63ad84c
+Q)What is the difference between git pull and git fetch?
+git fetch only downloads new data from a remote repository, but it doesn’t integrate any of the downloaded data into your working files. All it does is provide a view of this data.
+
+git pull downloads as well as merges the data from a remote repository into your local working files. It may also lead to merge conflicts if your local changes are not yet committed. Use the git stash command to hide your local changes.
+
+Q)What is a conflict in git and how can it be resolved?
+A conflict arises when more than one commit that has to be merged has some change in the same place or same line of code. Git will not be able to predict which change should take precedence. This is a git conflict.
+
+To resolve the conflict in git, edit the files to fix the conflicting changes and then add the resolved files by running git add. After that, to commit the repaired merge, run git commit. Git remembers that you are in the middle of a merge, so it sets the parents of the commit correctly.
+
+
+
+1)Difference between Git vs SVN
+The main point in Git vs SVN debate boils down to this: Git is a distributed version control system (DVCS), whereas SVN is a centralized version control system.
+
+2. What is Git fork? What is difference between fork and branch? How to create tag?
+A fork is a copy of a repository. Forking a repository allows you to freely experiment with changes without affecting the original project.
+A fork is really a Github (not Git) construct to store a clone of the repo in your user account. As a clone, it will contain all the branches in the main repo at the time you made the fork.
+Create Tag:
+Click the releases link on our repository page.
+Click on Create a new release or Draft a new release.
+Fill out the form fields, then click Publish release at the bottom.
+After you create your tag on GitHub, you might want to fetch it into your local repository too: git fetch.
+
+3. What is git cherry-pick?
+Cherry picking in git means to choose a commit from one branch and apply it onto another.
+This is in contrast with other ways such as merge and rebase which normally applies many commits onto a another branch.
+Make sure you are on the branch you want apply the commit to. git checkout master Execute the following:
+git cherry-pick <commit-hash>
+
+4. How to revert previous commit in git?
+To revert to a previous commit, ignoring any changes:
+git reset — hard HEAD
+where HEAD is the last commit in your current branch
+5. How to rebase master in git? Difference between rebase and merge. How to squash or fixup commits?
+Rebasing is the process of moving a branch to a new base commit.
+The golden rule of git rebase is to never use it on public branches. … The only way to synchronize the two master branches is to merge them back together, resulting in an extra merge commit and two sets of commits that contain the same changes.
+
+6. Explain git stash, pop
+Use git stash when you want to record the current state of the working directory and the index, but want to go back to a clean working directory.
+git stash pop applies the top stashed element and removes it from the stack. git stash apply does the same, but leaves it in the stash stack.
+
+7. Branching strategies Pros and Cons — Feature, Release branching, Git flow, Lean Git flow
+Pro: By keeping latest deployed version in trunk, small fixes can be rolled out quickly without extensive testing of the latest development version.
+Pro: Developers can work more freely in tighter iterations without stepping on eachother’s feet.
+Pro: if you have many branches you’ll be pushed to adopt a modern DVCS (my experience is with Mercurial but I hear git or Bazaar are also good) rather than stay with a traditional centralized system (like, say, svn).
+Pro: Branches can be used to facilitate ‘what-if’ scenario’s in trying out new code. At the end a decision can be made to merge the new feature or to abandon it.
+Con: Having too many branches in the air at the same time and you start forgetting where things where commited, where changes have been made etc.
+Con: someone has to manage the branch(es) and keep on top of things. In most teams this falls by the way-side.
+
+8. What is GIT?
+GIT is a distributed version control system and source code management (SCM) system.
+
+9. What is ‘head’ in git and how many heads can be created in a repository?
+A ‘head’ is simply a reference to a commit object. In every repository, there is a default head referred as “Master”. A repository can contain any number of heads.
+
+10. What are Git repository hosting services you used?
+Github, Bitbucket, Gitlab or you can specify if you have used something else here.
+
+11. What is the function of ‘git reset’?
+‘Git Reset’ is to reset your index as well as the working directory to the state of your last commit.
+
+12. What is the syntax for “Rebasing” in Git?
+Syntax: “git rebase [new-commit] “
+13. What is a ‘conflict’ in git?
+A ‘conflict’ arises when the commit that has to be merged has some change in one place, and the current commit also has a change at the same place.
+
+14. What language is used in Git?
+Git used “C programing language”.
+15. What Are The Advantages Of Using Git?
+a) Data redundancy and replication
+b) High availability
+c) Only one.git directory per repository
+d) Superior disk utilization and network performance
+e) Collaboration friendly
+f) Any sort of projects can use GIT
